@@ -12,6 +12,9 @@
             --white: #fff;
             --screentone-dot: #ccc;
             --panel-bg: #fff;
+            /* LOKALE DATEIEN: Diese Namen müssen exakt mit den Dateinamen auf deinem PC übereinstimmen! */
+            --girl-bg: url('manga_grid.png');
+            --plants-bg: url('manga_plants.png');
         }
 
         * {
@@ -27,7 +30,7 @@
             background-size: 10px 10px;
             color: var(--black);
             padding: 20px;
-            padding-bottom: 300px;
+            padding-bottom: 300px; /* Platz für das Manga-Mädchen unten */
         }
 
         header {
@@ -84,7 +87,7 @@
         /* --- BUTTONS --- */
         .plant-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             gap: 15px;
         }
 
@@ -92,7 +95,7 @@
             background: var(--white);
             border: 3px solid var(--black);
             border-radius: 8px;
-            padding: 10px 5px;
+            padding: 15px 5px 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.1s;
@@ -101,7 +104,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100px;
+            min-height: 120px;
             position: relative;
         }
 
@@ -117,28 +120,38 @@
             background: #ffe4e1;
         }
 
-        .plant-icon {
-            font-size: 2.2rem;
-            margin-bottom: 5px;
-            filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.2));
+        /* Das Guckloch für die Pflanzen-Bilder */
+        .plant-sprite {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid var(--black);
+            margin-bottom: 8px;
+            background-color: #fff;
+            background-image: var(--plants-bg);
+            /* Wir zoomen stark in das große Bild hinein */
+            background-size: 800%; 
+            background-repeat: no-repeat;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
         }
 
         .plant-number {
             position: absolute;
-            top: -8px;
-            left: -8px;
+            top: -10px;
+            left: -10px;
             background: var(--black);
             color: var(--white);
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             border: 2px solid var(--white);
             font-family: 'Bangers', cursive;
+            z-index: 2;
         }
 
         .plant-name {
@@ -215,16 +228,13 @@
             z-index: 1;
         }
 
-        /* DIESER CONTAINER ZEIGT IMMER NUR 1/9 DES BILDES */
         .manga-girl-sprite {
-            width: 320px; /* Ca. 16:9 Format eines einzelnen Panels */
+            width: 320px;
             height: 180px;
             background-color: white;
-            /* Das 3x3 Grid Bild wird als Hintergrund gesetzt */
-            background-image: url('manga_grid.png'); 
-            background-size: 300% 300%; /* Das Bild wird so vergrößert, dass 1/3 in die Box passt */
-            background-position: 100% 100%; /* Startet beim Panel unten rechts (zwinkernd) */
-            
+            background-image: var(--girl-bg); 
+            background-size: 300% 300%; 
+            background-position: 100% 100%; 
             border: 5px solid var(--black);
             border-radius: 15px;
             box-shadow: 8px 8px 0 rgba(0,0,0,0.3);
@@ -287,54 +297,53 @@
             <div class="speech-bubble" id="bubble-box">
                 <span id="dialog-text">JEDER KLEINE TRIEB IST EIN GRUND ZUM FEIERN! 💖</span>
             </div>
-            
-            <!-- Der Sprite-Container (Bilderbogen) -->
             <div class="manga-girl-sprite" id="manga-avatar"></div>
-
         </div>
     </div>
 
     <script>
+        // --- DATEN ---
+        // Die bgPos Werte (X Y) geben an, wo im "manga_plants.png" Bild wir das Gesicht der Pflanze finden
         const plantsData = [
-            // BILD 1
-            { id: 1, zone: 1, icon: "🪴", name: "Croton", care: "HEYY! ICH BRAUCHE VIEL HELLES LICHT FÜR MEINE BUNTEN BLÄTTER! VERGISS MICH NICHT! ✨" },
-            { id: 2, zone: 1, icon: "🌵", name: "Kugelkaktus", care: "STELL MICH IN DIE VOLLE SONNE! NUR GIEßEN WENN ICH STAUBTROCKEN BIN! ☀️" },
-            { id: 3, zone: 1, icon: "🥀", name: "Welk", care: "PEACEFUL SIGH... OH NEIN! ICH BRAUCHE DRINGEND WASSER! HILF MIR! 😭" },
-            { id: 4, zone: 1, icon: "🌵", name: "Sukkulente", care: "ZZZ... LASS MICH SCHLAFEN! WENIG WASSER, VIEL LICHT, BITTE! 🌙" },
-            { id: 5, zone: 1, icon: "👶", name: "Mini Kaktus", care: "GUGUG! GANZ VORSICHTIG GIEßEN, ICH BIN NOCH EIN BABY! 🍼" },
-            { id: 6, zone: 1, icon: "💪", name: "Adenium", care: "GÂN! ICH BRAUCHE PRALLE SONNE FÜR MEINE MUSKELN! 💪💥" },
-            { id: 7, zone: 1, icon: "🦖", name: "Dino-Topf", care: "CHARGE! KEINE STAUNÄSSE, SONST GREIFT DER T-REX AN! ⚔️" },
-            { id: 8, zone: 1, icon: "😐", name: "Bogenhanf", care: "EXTREM SELTEN GIEßEN. LASS MICH EINFACH IN RUHE. 😎" },
-            { id: 9, zone: 1, icon: "🥷", name: "Calathea", care: "PSST! ICH BIN EIN NINJA! HALTE MEINE ERDE LEICHT FEUCHT! 🍃" },
-            { id: 10, zone: 1, icon: "😠", name: "Sukkulente", care: "ALERT! KEINE DIREKTE MITTAGSSONNE FÜR MICH! 💢" },
-            { id: 11, zone: 1, icon: "🛸", name: "Pilea", care: "WOW, UFOS! DREH MICH AB UND ZU, DAMIT ICH GERADE WACHSE! 👽" },
-            { id: 12, zone: 1, icon: "🥵", name: "Kleine Pflanze", care: "PUH, HEIß! BEFREIE MICH AUS DER FOLIE, DAMIT WASSER ABFLIEßT! 💦" },
-            { id: 13, zone: 1, icon: "🌱", name: "Steckling", care: "JUHU! WECHSLE MEIN WASSER, BIS ICH WURZELN HABE! 🌊" },
+            // BILD 1 (Linkes Drittel)
+            { id: 1, zone: 1, bgPos: "5% 15%", name: "Croton", care: "HEYY! ICH BRAUCHE VIEL HELLES LICHT FÜR MEINE BUNTEN BLÄTTER! VERGISS MICH NICHT! ✨" },
+            { id: 2, zone: 1, bgPos: "20% 15%", name: "Kugelkaktus", care: "STELL MICH IN DIE VOLLE SONNE! NUR GIEßEN WENN ICH STAUBTROCKEN BIN! ☀️" },
+            { id: 3, zone: 1, bgPos: "32% 15%", name: "Welk", care: "PEACEFUL SIGH... OH NEIN! ICH BRAUCHE DRINGEND WASSER! HILF MIR! 😭" },
+            { id: 4, zone: 1, bgPos: "12% 28%", name: "Sukkulente", care: "ZZZ... LASS MICH SCHLAFEN! WENIG WASSER, VIEL LICHT, BITTE! 🌙" },
+            { id: 5, zone: 1, bgPos: "5% 40%", name: "Mini Kaktus", care: "GUGUG! GANZ VORSICHTIG GIEßEN, ICH BIN NOCH EIN BABY! 🍼" },
+            { id: 6, zone: 1, bgPos: "20% 45%", name: "Adenium", care: "GÂN! ICH BRAUCHE PRALLE SONNE FÜR MEINE MUSKELN! 💪💥" },
+            { id: 7, zone: 1, bgPos: "35% 40%", name: "Dino-Topf", care: "CHARGE! KEINE STAUNÄSSE, SONST GREIFT DER T-REX AN! ⚔️" },
+            { id: 8, zone: 1, bgPos: "10% 70%", name: "Bogenhanf", care: "EXTREM SELTEN GIEßEN. LASS MICH EINFACH IN RUHE. 😎" },
+            { id: 9, zone: 1, bgPos: "5% 85%", name: "Calathea", care: "PSST! ICH BIN EIN NINJA! HALTE MEINE ERDE LEICHT FEUCHT! 🍃" },
+            { id: 10, zone: 1, bgPos: "25% 65%", name: "Sukkulente", care: "ALERT! KEINE DIREKTE MITTAGSSONNE FÜR MICH! 💢" },
+            { id: 11, zone: 1, bgPos: "15% 95%", name: "Pilea", care: "WOW, UFOS! DREH MICH AB UND ZU, DAMIT ICH GERADE WACHSE! 👽" },
+            { id: 12, zone: 1, bgPos: "30% 90%", name: "Kleine Pflanze", care: "PUH, HEIß! BEFREIE MICH AUS DER FOLIE, DAMIT WASSER ABFLIEßT! 💦" },
+            { id: 13, zone: 1, bgPos: "40% 85%", name: "Steckling", care: "JUHU! WECHSLE MEIN WASSER, BIS ICH WURZELN HABE! 🌊" },
 
-            // BILD 2
-            { id: 14, zone: 2, icon: "🌿", name: "Ceropegia", care: "HÄNG MICH HELL AUF UND GIEß MICH ERST WENN ICH TROCKEN BIN! 🌸" },
-            { id: 15, zone: 2, icon: "🪴", name: "Tradescantia", care: "ICH WACHSE WIE VERRÜCKT BEI HELLEM LICHT! ✨" },
-            { id: 16, zone: 2, icon: "🪴", name: "Hängepflanze 3", care: "INDIREKTES LICHT MACHT MICH WUNSCHLOS GLÜCKLICH! 🥰" },
-            { id: 17, zone: 2, icon: "🪴", name: "Hängepflanze 4", care: "ERDSCHICHT IMMER ERST LEICHT ANTROCKNEN LASSEN! 💦" },
-            { id: 18, zone: 2, icon: "〰️", name: "Hängepflanze 5", care: "HELLES LICHT UND MÄßIG WASSER, NICHT ÜBERGIEßEN! ☀️" },
-            { id: 19, zone: 2, icon: "🌵", name: "Echinocactus", care: "GIB MIR DIE VOLLE SONNE! ABSOLUTE TROCKENRUHE IM WINTER! 🌞" },
-            { id: 20, zone: 2, icon: "🤍", name: "Sukkulente", care: "SONNIGES PLÄTZCHEN UND SEHR WENIG WASSER! 🤫" },
-            { id: 21, zone: 2, icon: "🪨", name: "Lithops", care: "FAST GAR NICHT GIEßEN! SONST PLATZE ICH! 💥" },
-            { id: 22, zone: 2, icon: "⚪", name: "Sukkulente", care: "HELLER STANDORT UND GANZ SPARSAM GIEßEN! 🪴" },
-            { id: 23, zone: 2, icon: "⬆️", name: "Säulenkaktus", care: "ICH WILL HOCH HINAUS! VIEL SONNE, WENIG WASSER! 🌵" },
-            { id: 24, zone: 2, icon: "🌵", name: "Kaktus Duo", care: "GANZ WENIG GIEßEN UND GANZ VIEL SONNE TANKEN! 👯‍♀️" },
-            { id: 25, zone: 2, icon: "🪴", name: "Kaktus Mix", care: "VORSICHTIG MIT DER GIEßKANNE BEI UNS ALLEN! 🚫💦" },
-            { id: 26, zone: 2, icon: "🐍", name: "Bogenhanf", care: "ICH BIN FAST UNKAPUTTBAR! NUR STAUNÄSSE HASSE ICH! 🛡️" },
+            // BILD 2 (Mittleres Drittel)
+            { id: 14, zone: 2, bgPos: "45% 15%", name: "Ceropegia", care: "HÄNG MICH HELL AUF UND GIEß MICH ERST WENN ICH TROCKEN BIN! 🌸" },
+            { id: 15, zone: 2, bgPos: "53% 15%", name: "Tradescantia", care: "ICH WACHSE WIE VERRÜCKT BEI HELLEM LICHT! ✨" },
+            { id: 16, zone: 2, bgPos: "62% 15%", name: "Hängepflanze 3", care: "INDIREKTES LICHT MACHT MICH WUNSCHLOS GLÜCKLICH! 🥰" },
+            { id: 17, zone: 2, bgPos: "68% 10%", name: "Hängepflanze 4", care: "ERDSCHICHT IMMER ERST LEICHT ANTROCKNEN LASSEN! 💦" },
+            { id: 18, zone: 2, bgPos: "75% 10%", name: "Hängepflanze 5", care: "HELLES LICHT UND MÄßIG WASSER, NICHT ÜBERGIEßEN! ☀️" },
+            { id: 19, zone: 2, bgPos: "45% 55%", name: "Echinocactus", care: "GIB MIR DIE VOLLE SONNE! ABSOLUTE TROCKENRUHE IM WINTER! 🌞" },
+            { id: 20, zone: 2, bgPos: "50% 60%", name: "Sukkulente", care: "SONNIGES PLÄTZCHEN UND SEHR WENIG WASSER! 🤫" },
+            { id: 21, zone: 2, bgPos: "55% 58%", name: "Lithops", care: "FAST GAR NICHT GIEßEN! SONST PLATZE ICH! 💥" },
+            { id: 22, zone: 2, bgPos: "62% 60%", name: "Sukkulente", care: "HELLER STANDORT UND GANZ SPARSAM GIEßEN! 🪴" },
+            { id: 23, zone: 2, bgPos: "68% 50%", name: "Säulenkaktus", care: "ICH WILL HOCH HINAUS! VIEL SONNE, WENIG WASSER! 🌵" },
+            { id: 24, zone: 2, bgPos: "85% 55%", name: "Kaktus Duo", care: "GANZ WENIG GIEßEN UND GANZ VIEL SONNE TANKEN! 👯‍♀️" },
+            { id: 25, zone: 2, bgPos: "90% 55%", name: "Kaktus Mix", care: "VORSICHTIG MIT DER GIEßKANNE BEI UNS ALLEN! 🚫💦" },
+            { id: 26, zone: 2, bgPos: "95% 50%", name: "Bogenhanf", care: "ICH BIN FAST UNKAPUTTBAR! NUR STAUNÄSSE HASSE ICH! 🛡️" },
 
-            // BILD 3
-            { id: 27, zone: 3, icon: "⬇️", name: "Efeutute", care: "GIEß MICH ERST, WENN DIE ERDE OBERFLÄCHLICH TROCKEN IST! 🍃" },
-            { id: 28, zone: 3, icon: "🐒", name: "Monkey Mask", care: "MONKEY MASK HIER! SPRÜH MICH AB UND ZU MAL AN! 🐒" },
-            { id: 29, zone: 3, icon: "🤍", name: "Njoy", care: "VIEL INDIREKTES LICHT FÜR MEINE WEIßEN FLECKEN! ✨" },
-            { id: 30, zone: 3, icon: "🦖", name: "Monstera", care: "ICH BRAUCHE PLATZ! WISCH MEINE GROßEN BLÄTTER AB! 🦖" },
-            { id: 31, zone: 3, icon: "🌴", name: "Hohe Pflanze", care: "ICH BRAUCHE STABILEN HALT UND EINEN HELLEN PLATZ! 🪵" },
-            { id: 32, zone: 3, icon: "🐍", name: "Bogenhanf 2", care: "HALBSCHATTEN IST OKAY. ABER SEHR SPARSAM GIEßEN! 🪴" },
-            { id: 33, zone: 3, icon: "🌱", name: "Mix Regal", care: "HELL, ABER OHNE PRALLE SONNE! ERDE LEICHT FEUCHT! 💧" },
-            { id: 34, zone: 3, icon: "📦", name: "Terrarium", care: "LUFTFEUCHTIGKEIT IST HIER SUPER! FAST NIE GIEßEN! 🌧️" }
+            // BILD 3 (Rechtes Drittel)
+            { id: 27, zone: 3, bgPos: "45% 90%", name: "Efeutute", care: "GIEß MICH ERST, WENN DIE ERDE OBERFLÄCHLICH TROCKEN IST! 🍃" },
+            { id: 28, zone: 3, bgPos: "60% 90%", name: "Monkey Mask", care: "MONKEY MASK HIER! SPRÜH MICH AB UND ZU MAL AN! 🐒" },
+            { id: 29, zone: 3, bgPos: "72% 90%", name: "Njoy", care: "VIEL INDIREKTES LICHT FÜR MEINE WEIßEN FLECKEN! ✨" },
+            { id: 30, zone: 3, bgPos: "80% 80%", name: "Monstera", care: "ICH BRAUCHE PLATZ! WISCH MEINE GROßEN BLÄTTER AB! 🦖" },
+            { id: 31, zone: 3, bgPos: "85% 15%", name: "Hohe Pflanze", care: "ICH BRAUCHE STABILEN HALT UND EINEN HELLEN PLATZ! 🪵" },
+            { id: 32, zone: 3, bgPos: "88% 85%", name: "Bogenhanf 2", care: "HALBSCHATTEN IST OKAY. ABER SEHR SPARSAM GIEßEN! 🪴" },
+            { id: 33, zone: 3, bgPos: "92% 65%", name: "Mix Regal", care: "HELL, ABER OHNE PRALLE SONNE! ERDE LEICHT FEUCHT! 💧" },
+            { id: 34, zone: 3, bgPos: "98% 85%", name: "Terrarium", care: "LUFTFEUCHTIGKEIT IST HIER SUPER! FAST NIE GIEßEN! 🌧️" }
         ];
 
         function renderZone(zoneNum, titleText, containerId) {
@@ -354,9 +363,10 @@
                 card.className = 'plant-card';
                 card.onclick = () => showCareInstruction(plant.care);
                 
+                // HIER IST DER NEUE SPRITE DIV FÜR DIE PFLANZEN!
                 card.innerHTML = `
                     <div class="plant-number">${plant.id}</div>
-                    <div class="plant-icon">${plant.icon}</div>
+                    <div class="plant-sprite" style="background-position: ${plant.bgPos};"></div>
                     <div class="plant-name">${plant.name}</div>
                 `;
                 grid.appendChild(card);
@@ -371,20 +381,13 @@
 
         let typeWriterInterval;
         
-        // Die 9 Positionen des 3x3 Gitters (X und Y Achse in Prozent)
+        // Die 9 Positionen des Mädchens
         const panelPositions = [
-            "0% 0%",    // Oben links (Gießen)
-            "50% 0%",   // Oben mitte (Umtopfen)
-            "100% 0%",  // Oben rechts (Lupe)
-            "0% 50%",   // Mitte links (Abstauben)
-            "50% 50%",  // Mitte mitte (Schneiden)
-            "100% 50%", // Mitte rechts (Terrarium)
-            "0% 100%",  // Unten links (Steckling)
-            "50% 100%", // Unten mitte (Lesen/Musik)
-            "100% 100%" // Unten rechts (Feiern/Zwinkern)
+            "0% 0%", "50% 0%", "100% 0%",
+            "0% 50%", "50% 50%", "100% 50%",
+            "0% 100%", "50% 100%", "100% 100%"
         ];
-        
-        let currentPanel = 8; // Startbild ist unten rechts
+        let currentPanel = 8; 
 
         function showCareInstruction(text) {
             const dialogBox = document.getElementById('dialog-text');
@@ -394,25 +397,19 @@
             clearInterval(typeWriterInterval); 
             dialogBox.innerHTML = ''; 
             
-            // Comic Action Effekt auf der Sprechblase und dem Mädchen
             bubble.style.transform = 'scale(1.1)';
             avatar.style.transform = 'scale(1.05)';
-            
             setTimeout(() => {
                 bubble.style.transform = 'scale(1)';
                 avatar.style.transform = 'scale(1)';
             }, 150);
 
-            // Zufälliges neues Panel auswählen (soll nicht dasselbe wie vorher sein)
             let newPanel;
-            do {
-                newPanel = Math.floor(Math.random() * 9);
-            } while (newPanel === currentPanel);
+            do { newPanel = Math.floor(Math.random() * 9); } while (newPanel === currentPanel);
             
             currentPanel = newPanel;
             avatar.style.backgroundPosition = panelPositions[currentPanel];
 
-            // Texttippen starten
             let i = 0;
             typeWriterInterval = setInterval(() => {
                 if (i < text.length) {
