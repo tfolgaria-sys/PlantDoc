@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manga Plant Collection</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Kalam:wght@400;700&display=swap');
+
+        :root {
+            --black: #111;
+            --white: #fff;
+            --screentone-dot: #ccc;
+            --panel-bg: #fff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Kalam', 'Comic Sans MS', cursive, sans-serif;
+            background-color: var(--white);
+            background-image: radial-gradient(var(--screentone-dot) 2px, transparent 2px);
+            background-size: 10px 10px;
+            color: var(--black);
+            padding: 20px;
+            padding-bottom: 300px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Bangers', cursive;
+            font-size: 4rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--white);
+            -webkit-text-stroke: 3px var(--black);
+            text-shadow: 6px 6px 0 var(--black);
+            display: inline-block;
+            transform: rotate(-2deg);
+        }
+
+        /* --- MANGA PANELS --- */
+        .comic-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 5px solid var(--black);
+            box-shadow: 10px 10px 0 var(--black);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel-1 { grid-column: 1 / -1; }
+
+        .panel-title {
+            font-family: 'Bangers', cursive;
+            background: var(--black);
+            color: var(--white);
+            display: inline-block;
+            padding: 5px 20px;
+            font-size: 1.8rem;
+            transform: skew(-10deg);
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            box-shadow: 4px 4px 0px #888;
+        }
+
+        /* --- BUTTONS --- */
+        .plant-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 15px;
+        }
+
+        .plant-card {
+            background: var(--white);
+            border: 3px solid var(--black);
+            border-radius: 8px;
+            padding: 10px 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.1s;
+            box-shadow: 4px 4px 0 var(--black);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
+            position: relative;
+        }
+
+        .plant-card:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 7px 7px 0 var(--black);
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, #f0f0f0 5px, #f0f0f0 10px);
+        }
+
+        .plant-card:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 var(--black);
+            background: #ffe4e1;
+        }
+
+        .plant-icon {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.2));
+        }
+
+        .plant-number {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            background: var(--black);
+            color: var(--white);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border: 2px solid var(--white);
+            font-family: 'Bangers', cursive;
+        }
+
+        .plant-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--black);
+            text-transform: uppercase;
+        }
+
+        /* --- MANGA MÄDCHEN UI --- */
+        .character-ui {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 1000;
+            padding: 0 20px;
+        }
+
+        .dialog-container {
+            display: flex;
+            align-items: flex-end;
+            max-width: 900px;
+            width: 100%;
+            pointer-events: auto;
+            margin-bottom: 20px;
+        }
+
+        .speech-bubble {
+            background: var(--white);
+            border: 5px solid var(--black);
+            border-radius: 40px;
+            padding: 25px 35px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--black);
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
+            position: relative;
+            flex-grow: 1;
+            margin-right: 30px;
+            margin-bottom: 50px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            text-transform: uppercase;
+            transition: transform 0.1s;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -25px;
+            right: 60px;
+            border-width: 25px 0 0 25px;
+            border-style: solid;
+            border-color: var(--black) transparent transparent transparent;
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            right: 63px;
+            border-width: 17px 0 0 17px;
+            border-style: solid;
+            border-color: var(--white) transparent transparent transparent;
+            z-index: 1;
+        }
+
+        /* DIESER CONTAINER ZEIGT IMMER NUR 1/9 DES BILDES */
+        .manga-girl-sprite {
+            width: 320px; /* Ca. 16:9 Format eines einzelnen Panels */
+            height: 180px;
+            background-color: white;
+            /* Das 3x3 Grid Bild wird als Hintergrund gesetzt */
+            background-image: url('manga_grid.png'); 
+            background-size: 300% 300%; /* Das Bild wird so vergrößert, dass 1/3 in die Box passt */
+            background-position: 100% 100%; /* Startet beim Panel unten rechts (zwinkernd) */
+            
+            border: 5px solid var(--black);
+            border-radius: 15px;
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.3);
+            pointer-events: auto;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: float-manga 4s ease-in-out infinite;
+        }
+
+        @keyframes float-manga {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @media (max-width: 900px) {
+            .comic-page { grid-template-columns: 1fr; }
+            .dialog-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .speech-bubble {
+                margin-right: 0;
+                margin-bottom: 20px;
+                order: -1;
+                width: 90%;
+            }
+            .speech-bubble::after {
+                bottom: -25px;
+                right: 50%;
+                transform: translateX(50%);
+                border-width: 25px 15px 0 15px;
+            }
+            .speech-bubble::before {
+                bottom: -15px;
+                right: 50%;
+                transform: translateX(50%);
+                border-width: 17px 10px 0 10px;
+            }
+            .manga-girl-sprite {
+                width: 280px;
+                height: 157px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Pflanzen Manga</h1>
+    </header>
+
+    <div class="comic-page">
+        <div class="panel panel-1" id="zone-1-container"></div>
+        <div class="panel" id="zone-2-container"></div>
+        <div class="panel" id="zone-3-container"></div>
+    </div>
+
+    <!-- Manga Charakter UI -->
+    <div class="character-ui">
+        <div class="dialog-container">
+            <div class="speech-bubble" id="bubble-box">
+                <span id="dialog-text">JEDER KLEINE TRIEB IST EIN GRUND ZUM FEIERN! 💖</span>
+            </div>
+            
+            <!-- Der Sprite-Container (Bilderbogen) -->
+            <div class="manga-girl-sprite" id="manga-avatar"></div>
+
+        </div>
+    </div>
+
+    <script>
+        const plantsData = [
+            // BILD 1
+            { id: 1, zone: 1, icon: "🪴", name: "Croton", care: "HEYY! ICH BRAUCHE VIEL HELLES LICHT FÜR MEINE BUNTEN BLÄTTER! VERGISS MICH NICHT! ✨" },
+            { id: 2, zone: 1, icon: "🌵", name: "Kugelkaktus", care: "STELL MICH IN DIE VOLLE SONNE! NUR GIEßEN WENN ICH STAUBTROCKEN BIN! ☀️" },
+            { id: 3, zone: 1, icon: "🥀", name: "Welk", care: "PEACEFUL SIGH... OH NEIN! ICH BRAUCHE DRINGEND WASSER! HILF MIR! 😭" },
+            { id: 4, zone: 1, icon: "🌵", name: "Sukkulente", care: "ZZZ... LASS MICH SCHLAFEN! WENIG WASSER, VIEL LICHT, BITTE! 🌙" },
+            { id: 5, zone: 1, icon: "👶", name: "Mini Kaktus", care: "GUGUG! GANZ VORSICHTIG GIEßEN, ICH BIN NOCH EIN BABY! 🍼" },
+            { id: 6, zone: 1, icon: "💪", name: "Adenium", care: "GÂN! ICH BRAUCHE PRALLE SONNE FÜR MEINE MUSKELN! 💪💥" },
+            { id: 7, zone: 1, icon: "🦖", name: "Dino-Topf", care: "CHARGE! KEINE STAUNÄSSE, SONST GREIFT DER T-REX AN! ⚔️" },
+            { id: 8, zone: 1, icon: "😐", name: "Bogenhanf", care: "EXTREM SELTEN GIEßEN. LASS MICH EINFACH IN RUHE. 😎" },
+            { id: 9, zone: 1, icon: "🥷", name: "Calathea", care: "PSST! ICH BIN EIN NINJA! HALTE MEINE ERDE LEICHT FEUCHT! 🍃" },
+            { id: 10, zone: 1, icon: "😠", name: "Sukkulente", care: "ALERT! KEINE DIREKTE MITTAGSSONNE FÜR MICH! 💢" },
+            { id: 11, zone: 1, icon: "🛸", name: "Pilea", care: "WOW, UFOS! DREH MICH AB UND ZU, DAMIT ICH GERADE WACHSE! 👽" },
+            { id: 12, zone: 1, icon: "🥵", name: "Kleine Pflanze", care: "PUH, HEIß! BEFREIE MICH AUS DER FOLIE, DAMIT WASSER ABFLIEßT! 💦" },
+            { id: 13, zone: 1, icon: "🌱", name: "Steckling", care: "JUHU! WECHSLE MEIN WASSER, BIS ICH WURZELN HABE! 🌊" },
+
+            // BILD 2
+            { id: 14, zone: 2, icon: "🌿", name: "Ceropegia", care: "HÄNG MICH HELL AUF UND GIEß MICH ERST WENN ICH TROCKEN BIN! 🌸" },
+            { id: 15, zone: 2, icon: "🪴", name: "Tradescantia", care: "ICH WACHSE WIE VERRÜCKT BEI HELLEM LICHT! ✨" },
+            { id: 16, zone: 2, icon: "🪴", name: "Hängepflanze 3", care: "INDIREKTES LICHT MACHT MICH WUNSCHLOS GLÜCKLICH! 🥰" },
+            { id: 17, zone: 2, icon: "🪴", name: "Hängepflanze 4", care: "ERDSCHICHT IMMER ERST LEICHT ANTROCKNEN LASSEN! 💦" },
+            { id: 18, zone: 2, icon: "〰️", name: "Hängepflanze 5", care: "HELLES LICHT UND MÄßIG WASSER, NICHT ÜBERGIEßEN! ☀️" },
+            { id: 19, zone: 2, icon: "🌵", name: "Echinocactus", care: "GIB MIR DIE VOLLE SONNE! ABSOLUTE TROCKENRUHE IM WINTER! 🌞" },
+            { id: 20, zone: 2, icon: "🤍", name: "Sukkulente", care: "SONNIGES PLÄTZCHEN UND SEHR WENIG WASSER! 🤫" },
+            { id: 21, zone: 2, icon: "🪨", name: "Lithops", care: "FAST GAR NICHT GIEßEN! SONST PLATZE ICH! 💥" },
+            { id: 22, zone: 2, icon: "⚪", name: "Sukkulente", care: "HELLER STANDORT UND GANZ SPARSAM GIEßEN! 🪴" },
+            { id: 23, zone: 2, icon: "⬆️", name: "Säulenkaktus", care: "ICH WILL HOCH HINAUS! VIEL SONNE, WENIG WASSER! 🌵" },
+            { id: 24, zone: 2, icon: "🌵", name: "Kaktus Duo", care: "GANZ WENIG GIEßEN UND GANZ VIEL SONNE TANKEN! 👯‍♀️" },
+            { id: 25, zone: 2, icon: "🪴", name: "Kaktus Mix", care: "VORSICHTIG MIT DER GIEßKANNE BEI UNS ALLEN! 🚫💦" },
+            { id: 26, zone: 2, icon: "🐍", name: "Bogenhanf", care: "ICH BIN FAST UNKAPUTTBAR! NUR STAUNÄSSE HASSE ICH! 🛡️" },
+
+            // BILD 3
+            { id: 27, zone: 3, icon: "⬇️", name: "Efeutute", care: "GIEß MICH ERST, WENN DIE ERDE OBERFLÄCHLICH TROCKEN IST! 🍃" },
+            { id: 28, zone: 3, icon: "🐒", name: "Monkey Mask", care: "MONKEY MASK HIER! SPRÜH MICH AB UND ZU MAL AN! 🐒" },
+            { id: 29, zone: 3, icon: "🤍", name: "Njoy", care: "VIEL INDIREKTES LICHT FÜR MEINE WEIßEN FLECKEN! ✨" },
+            { id: 30, zone: 3, icon: "🦖", name: "Monstera", care: "ICH BRAUCHE PLATZ! WISCH MEINE GROßEN BLÄTTER AB! 🦖" },
+            { id: 31, zone: 3, icon: "🌴", name: "Hohe Pflanze", care: "ICH BRAUCHE STABILEN HALT UND EINEN HELLEN PLATZ! 🪵" },
+            { id: 32, zone: 3, icon: "🐍", name: "Bogenhanf 2", care: "HALBSCHATTEN IST OKAY. ABER SEHR SPARSAM GIEßEN! 🪴" },
+            { id: 33, zone: 3, icon: "🌱", name: "Mix Regal", care: "HELL, ABER OHNE PRALLE SONNE! ERDE LEICHT FEUCHT! 💧" },
+            { id: 34, zone: 3, icon: "📦", name: "Terrarium", care: "LUFTFEUCHTIGKEIT IST HIER SUPER! FAST NIE GIEßEN! 🌧️" }
+        ];
+
+        function renderZone(zoneNum, titleText, containerId) {
+            const container = document.getElementById(containerId);
+            const zonePlants = plantsData.filter(p => p.zone === zoneNum);
+            
+            const title = document.createElement('h2');
+            title.className = 'panel-title';
+            title.textContent = titleText;
+            container.appendChild(title);
+
+            const grid = document.createElement('div');
+            grid.className = 'plant-grid';
+
+            zonePlants.forEach(plant => {
+                const card = document.createElement('div');
+                card.className = 'plant-card';
+                card.onclick = () => showCareInstruction(plant.care);
+                
+                card.innerHTML = `
+                    <div class="plant-number">${plant.id}</div>
+                    <div class="plant-icon">${plant.icon}</div>
+                    <div class="plant-name">${plant.name}</div>
+                `;
+                grid.appendChild(card);
+            });
+
+            container.appendChild(grid);
+        }
+
+        renderZone(1, "PANEL 1: FENSTERBANK LINKS", "zone-1-container");
+        renderZone(2, "PANEL 2: FENSTERBANK RECHTS", "zone-2-container");
+        renderZone(3, "PANEL 3: DIE PFLANZENECKE", "zone-3-container");
+
+        let typeWriterInterval;
+        
+        // Die 9 Positionen des 3x3 Gitters (X und Y Achse in Prozent)
+        const panelPositions = [
+            "0% 0%",    // Oben links (Gießen)
+            "50% 0%",   // Oben mitte (Umtopfen)
+            "100% 0%",  // Oben rechts (Lupe)
+            "0% 50%",   // Mitte links (Abstauben)
+            "50% 50%",  // Mitte mitte (Schneiden)
+            "100% 50%", // Mitte rechts (Terrarium)
+            "0% 100%",  // Unten links (Steckling)
+            "50% 100%", // Unten mitte (Lesen/Musik)
+            "100% 100%" // Unten rechts (Feiern/Zwinkern)
+        ];
+        
+        let currentPanel = 8; // Startbild ist unten rechts
+
+        function showCareInstruction(text) {
+            const dialogBox = document.getElementById('dialog-text');
+            const bubble = document.getElementById('bubble-box');
+            const avatar = document.getElementById('manga-avatar');
+            
+            clearInterval(typeWriterInterval); 
+            dialogBox.innerHTML = ''; 
+            
+            // Comic Action Effekt auf der Sprechblase und dem Mädchen
+            bubble.style.transform = 'scale(1.1)';
+            avatar.style.transform = 'scale(1.05)';
+            
+            setTimeout(() => {
+                bubble.style.transform = 'scale(1)';
+                avatar.style.transform = 'scale(1)';
+            }, 150);
+
+            // Zufälliges neues Panel auswählen (soll nicht dasselbe wie vorher sein)
+            let newPanel;
+            do {
+                newPanel = Math.floor(Math.random() * 9);
+            } while (newPanel === currentPanel);
+            
+            currentPanel = newPanel;
+            avatar.style.backgroundPosition = panelPositions[currentPanel];
+
+            // Texttippen starten
+            let i = 0;
+            typeWriterInterval = setInterval(() => {
+                if (i < text.length) {
+                    dialogBox.innerHTML += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(typeWriterInterval);
+                }
+            }, 20); 
+        }
+    </script>
+</body>
+</html>
