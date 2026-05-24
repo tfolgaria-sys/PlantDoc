@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -49,6 +49,68 @@
             text-shadow: 6px 6px 0 var(--black);
             display: inline-block;
             transform: rotate(-2deg);
+        }
+
+        /* --- VIDEO OVERLAY --- */
+        #video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+
+        #intro-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Passt das Video an den gesamten Bildschirm an */
+        }
+
+        #skip-btn {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: var(--white);
+            border: 4px solid var(--black);
+            font-family: 'Bangers', cursive;
+            font-size: 1.5rem;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 var(--black);
+            transition: transform 0.1s;
+            z-index: 10000;
+        }
+
+        #skip-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 var(--black);
+        }
+
+        #start-prompt {
+            position: absolute;
+            color: var(--white);
+            font-family: 'Bangers', cursive;
+            font-size: 3rem;
+            text-shadow: 4px 4px 0 var(--black);
+            cursor: pointer;
+            z-index: 10001;
+            display: none; /* Wird über JS gesteuert, falls Autoplay blockiert wird */
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            padding: 20px 40px;
+            border-radius: 20px;
+            border: 4px dashed var(--white);
+        }
+
+        #start-prompt:hover {
+            transform: scale(1.05);
         }
 
         /* --- MANGA PANELS --- */
@@ -281,6 +343,16 @@
 </head>
 <body>
 
+    <!-- Intro Video Overlay -->
+    <div id="video-overlay">
+        <video id="intro-video" playsinline>
+            <source src="PlantDoc Video.mp4" type="video/mp4">
+            Dein Browser unterstützt das Video-Tag nicht.
+        </video>
+        <div id="start-prompt">Klicke hier, um zu starten! 🎬</div>
+        <button id="skip-btn">Überspringen ⏭️</button>
+    </div>
+
     <header>
         <h1>Pflanzen Manga</h1>
     </header>
@@ -302,21 +374,64 @@
     </div>
 
     <script>
+        // --- VIDEO LOGIK ---
+        const videoOverlay = document.getElementById('video-overlay');
+        const introVideo = document.getElementById('intro-video');
+        const skipBtn = document.getElementById('skip-btn');
+        const startPrompt = document.getElementById('start-prompt');
+
+        function closeVideo() {
+            videoOverlay.style.opacity = '0';
+            setTimeout(() => {
+                videoOverlay.style.display = 'none';
+                introVideo.pause();
+                // Optional: introVideo.src = ""; // Falls Speicher gespart werden soll
+            }, 1000);
+        }
+
+        // Wenn das Video zu Ende ist oder auf "Überspringen" geklickt wird
+        introVideo.addEventListener('ended', closeVideo);
+        skipBtn.addEventListener('click', closeVideo);
+
+        // Autoplay-Policy: Die meisten Browser blockieren Video mit Ton, wenn es nicht vom Nutzer gestartet wurde.
+        let playPromise = introVideo.play();
+
+        if (playPromise !== undefined) {
+            playPromise.then(_ => {
+                // Autoplay hat funktioniert!
+                startPrompt.style.display = 'none';
+            })
+            .catch(error => {
+                // Autoplay wurde blockiert. Zeige den "Start"-Hinweis.
+                startPrompt.style.display = 'block';
+                introVideo.pause();
+            });
+        }
+
+        // Klick auf den Start-Hinweis startet das Video
+        startPrompt.addEventListener('click', () => {
+            startPrompt.style.display = 'none';
+            introVideo.play();
+        });
+
+
         // --- DATEN ---
         // Die bgPos Werte (X Y) geben an, wo im "manga_plants.png" Bild wir das Gesicht der Pflanze finden
         const plantsData = [
-            // BILD 1 (Linkes Drittel)
-            { id: 1, zone: 1, bgPos: "5% 15%", name: "Croton", care: "HEYY! ICH BRAUCHE VIEL HELLES LICHT FÜR MEINE BUNTEN BLÄTTER! VERGISS MICH NICHT! ✨" },
-            { id: 2, zone: 1, bgPos: "20% 15%", name: "Kugelkaktus", care: "STELL MICH IN DIE VOLLE SONNE! NUR GIEßEN WENN ICH STAUBTROCKEN BIN! ☀️" },
-            { id: 3, zone: 1, bgPos: "32% 15%", name: "Welk", care: "PEACEFUL SIGH... OH NEIN! ICH BRAUCHE DRINGEND WASSER! HILF MIR! 😭" },
-            { id: 4, zone: 1, bgPos: "12% 28%", name: "Sukkulente", care: "ZZZ... LASS MICH SCHLAFEN! WENIG WASSER, VIEL LICHT, BITTE! 🌙" },
-            { id: 5, zone: 1, bgPos: "5% 40%", name: "Mini Kaktus", care: "GUGUG! GANZ VORSICHTIG GIEßEN, ICH BIN NOCH EIN BABY! 🍼" },
-            { id: 6, zone: 1, bgPos: "20% 45%", name: "Adenium", care: "GÂN! ICH BRAUCHE PRALLE SONNE FÜR MEINE MUSKELN! 💪💥" },
-            { id: 7, zone: 1, bgPos: "35% 40%", name: "Dino-Topf", care: "CHARGE! KEINE STAUNÄSSE, SONST GREIFT DER T-REX AN! ⚔️" },
-            { id: 8, zone: 1, bgPos: "10% 70%", name: "Bogenhanf", care: "EXTREM SELTEN GIEßEN. LASS MICH EINFACH IN RUHE. 😎" },
-            { id: 9, zone: 1, bgPos: "5% 85%", name: "Calathea", care: "PSST! ICH BIN EIN NINJA! HALTE MEINE ERDE LEICHT FEUCHT! 🍃" },
-            { id: 10, zone: 1, bgPos: "25% 65%", name: "Sukkulente", care: "ALERT! KEINE DIREKTE MITTAGSSONNE FÜR MICH! 💢" },
-            { id: 11, zone: 1, bgPos: "15% 95%", name: "Pilea", care: "WOW, UFOS! DREH MICH AB UND ZU, DAMIT ICH GERADE WACHSE! 👽" },
+            // BILD 1 (Linkes Drittel) - Lokale Einzelbilder R1 bis R11
+            { id: 1, zone: 1, imgUrl: "R1.png", bgPos: "5% 15%", name: "Croton", care: "HEYY! ICH BRAUCHE VIEL HELLES LICHT FÜR MEINE BUNTEN BLÄTTER! VERGISS MICH NICHT! ✨" },
+            { id: 2, zone: 1, imgUrl: "R2.png", bgPos: "20% 15%", name: "Kugelkaktus", care: "STELL MICH IN DIE VOLLE SONNE! NUR GIEßEN WENN ICH STAUBTROCKEN BIN! ☀️" },
+            { id: 3, zone: 1, imgUrl: "R3.png", bgPos: "32% 15%", name: "Welk", care: "PEACEFUL SIGH... OH NEIN! ICH BRAUCHE DRINGEND WASSER! HILF MIR! 😭" },
+            { id: 4, zone: 1, imgUrl: "R4.png", bgPos: "12% 28%", name: "Sukkulente", care: "ZZZ... LASS MICH SCHLAFEN! WENIG WASSER, VIEL LICHT, BITTE! 🌙" },
+            { id: 5, zone: 1, imgUrl: "R5.png", bgPos: "5% 40%", name: "Mini Kaktus", care: "GUGUG! GANZ VORSICHTIG GIEßEN, ICH BIN NOCH EIN BABY! 🍼" },
+            { id: 6, zone: 1, imgUrl: "R6.png", bgPos: "20% 45%", name: "Adenium", care: "GÂN! ICH BRAUCHE PRALLE SONNE FÜR MEINE MUSKELN! 💪💥" },
+            { id: 7, zone: 1, imgUrl: "R7.png", bgPos: "35% 40%", name: "Dino-Topf", care: "CHARGE! KEINE STAUNÄSSE, SONST GREIFT DER T-REX AN! ⚔️" },
+            { id: 8, zone: 1, imgUrl: "R8.png", bgPos: "10% 70%", name: "Bogenhanf", care: "EXTREM SELTEN GIEßEN. LASS MICH EINFACH IN RUHE. 😎" },
+            { id: 9, zone: 1, imgUrl: "R9.png", bgPos: "5% 85%", name: "Calathea", care: "PSST! ICH BIN EIN NINJA! HALTE MEINE ERDE LEICHT FEUCHT! 🍃" },
+            { id: 10, zone: 1, imgUrl: "R10.png", bgPos: "25% 65%", name: "Sukkulente", care: "ALERT! KEINE DIREKTE MITTAGSSONNE FÜR MICH! 💢" },
+            { id: 11, zone: 1, imgUrl: "R11.png", bgPos: "15% 95%", name: "Pilea", care: "WOW, UFOS! DREH MICH AB UND ZU, DAMIT ICH GERADE WACHSE! 👽" },
+            
+            // Restliche der Fensterbank (noch aus dem großen Sprite, solange du noch keine R-Bilder dafür hast)
             { id: 12, zone: 1, bgPos: "30% 90%", name: "Kleine Pflanze", care: "PUH, HEIß! BEFREIE MICH AUS DER FOLIE, DAMIT WASSER ABFLIEßT! 💦" },
             { id: 13, zone: 1, bgPos: "40% 85%", name: "Steckling", care: "JUHU! WECHSLE MEIN WASSER, BIS ICH WURZELN HABE! 🌊" },
 
@@ -363,10 +478,18 @@
                 card.className = 'plant-card';
                 card.onclick = () => showCareInstruction(plant.care);
                 
+                // HIER WIRD GEPRÜFT, OB EIN EIGENES BILD (z.B. R1.png) ANGEGEBEN IST
+                let spriteStyle = '';
+                if (plant.imgUrl) {
+                    spriteStyle = `background-image: url('${plant.imgUrl}'); background-size: cover; background-position: center;`;
+                } else {
+                    spriteStyle = `background-position: ${plant.bgPos};`;
+                }
+
                 // HIER IST DER NEUE SPRITE DIV FÜR DIE PFLANZEN!
                 card.innerHTML = `
                     <div class="plant-number">${plant.id}</div>
-                    <div class="plant-sprite" style="background-position: ${plant.bgPos};"></div>
+                    <div class="plant-sprite" style="${spriteStyle}"></div>
                     <div class="plant-name">${plant.name}</div>
                 `;
                 grid.appendChild(card);
